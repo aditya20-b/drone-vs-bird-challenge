@@ -1,0 +1,5 @@
+extracted_frames/
+train_videos/
+output_json/
+.env/
+__pycache__/

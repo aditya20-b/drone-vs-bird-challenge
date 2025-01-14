@@ -9,7 +9,10 @@ from collections import defaultdict
                 
           
 if __name__ == '__main__':
-
+    OUT_PATH = 'output_json'
+    PATH_TO_GT_FILES = 'annotations' 
+    CURRENT_IMAGE_NAME =  lambda img_id: f"{img_id}.jpg"
+    
     gt_dir = PATH_TO_GT_FILES #has to be adapted
     gt_list = os.listdir(gt_dir)
     
@@ -54,7 +57,7 @@ if __name__ == '__main__':
                     img_info['id'] = img_id
                     img_info['width'] = width
                     img_info['height'] = height
-                    img_info['file_name'] = CURRENT_IMAGE_NAME #has to be adapted for instance for img_id = 0 image_name = 0.jpg
+                    img_info['file_name'] = CURRENT_IMAGE_NAME(img_id) #has to be adapted for instance for img_id = 0 image_name = 0.jpg
                     out_data['images'].append(img_info)
                 
                     for idx in range(obj_cnt):
@@ -80,7 +83,7 @@ if __name__ == '__main__':
                                      
             #save out json 
             with open(out_file, 'w') as outfile:
-                json.dump(out_data, outfile)
+                json.dump(out_data, outfile, indent=4)
 
 
 
