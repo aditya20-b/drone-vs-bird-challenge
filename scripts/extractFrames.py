@@ -1,6 +1,6 @@
 import os
 import subprocess
-from sanityCheck import get_video_frame_count, count_extracted_frames, RED, GREEN, YELLOW, RESET
+from sanityCheck import get_video_frame_count, count_extracted_frames_common_dir, RED, GREEN, YELLOW, RESET
 import json
 video_dir = 'train_videos'
 output_dir = 'extracted_frames'
@@ -14,11 +14,8 @@ with open(log_file, 'w') as log:
         if video.endswith(('.mp4', '.avi')):
             video_path = os.path.join(video_dir, video)
             base_name = os.path.splitext(video)[0]
-            video_output_dir = os.path.join(output_dir, base_name)
-
-            os.makedirs(video_output_dir, exist_ok=True)
             
-            output_path = os.path.join(video_output_dir, f"{base_name}_%04d.jpg")
+            output_path = os.path.join(output_dir, f"{base_name}_%04d.jpg")
             
             cmd = [
                 'ffmpeg', '-i', video_path,
@@ -29,7 +26,7 @@ with open(log_file, 'w') as log:
             result = subprocess.run(cmd, capture_output=True, text=True)
             log_json = {
                 'video': video,
-                'output_dir': video_output_dir,
+                'output_files': [f"{base_name}_{i:04d}.jpg" for i in range(1, get_video_frame_count(video_path) + 1)],
                 'returncode': result.returncode,
                 'stdout': result.stdout,
                 'stderr': result.stderr
@@ -39,10 +36,10 @@ with open(log_file, 'w') as log:
             log.write(',\n')
             if result.returncode == 0:
                 total_frames = get_video_frame_count(video_path)
-                extracted_frames = count_extracted_frames(video)
+                extracted_frames = count_extracted_frames_common_dir(output_dir, base_name)
 
                 if total_frames == extracted_frames:
-                    print(f"{GREEN} ✔️ Frames extracted for {video} in {video_output_dir} - Total Frames: {total_frames}, Extracted: {extracted_frames}{RESET}")
+                    print(f"{GREEN} ✔️ Frames extracted for {video} - Total Frames: {total_frames}, Extracted: {extracted_frames}{RESET}")
                 else:
                     print(f"{YELLOW} ⚠️ Frame count mismatch for {video} - Total Frames: {total_frames}, Extracted: {extracted_frames}{RESET}")
             else:

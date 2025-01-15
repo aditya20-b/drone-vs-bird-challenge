@@ -30,6 +30,10 @@ def count_extracted_frames(video_name: str) -> int:
         return len([f for f in os.listdir(video_frames_dir) if f.endswith('.jpg')])
     return 0
 
+def count_extracted_frames_common_dir(frames_dir: str, video_name: str) -> int:
+    frames_count = [f for f in os.listdir(frames_dir) if f.startswith(video_name) and f.endswith('.jpg')]
+    return len(frames_count)
+
 # Perform sanity check
 def sanity_check():
     discrepancies = []
