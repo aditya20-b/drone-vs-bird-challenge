@@ -13,7 +13,7 @@ if __name__ == '__main__':
     PATH_TO_GT_FILES = 'annotations' 
     # CURRENT_IMAGE_NAME =  lambda img_id, video_name: f"{video_name}_{img_id}.jpg"
     def format_image_name(img_id, video_name):
-        return f"{video_name}_{img_id:04d}.jpg"
+        return f"extracted_frames/{video_name}_{img_id:04d}.jpg"
 
     CURRENT_IMAGE_NAME = format_image_name
     
