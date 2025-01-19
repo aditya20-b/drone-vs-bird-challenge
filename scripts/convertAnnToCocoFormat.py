@@ -11,7 +11,11 @@ from collections import defaultdict
 if __name__ == '__main__':
     OUT_PATH = 'output_json'
     PATH_TO_GT_FILES = 'annotations' 
-    CURRENT_IMAGE_NAME =  lambda img_id: f"{img_id}.jpg"
+    # CURRENT_IMAGE_NAME =  lambda img_id, video_name: f"{video_name}_{img_id}.jpg"
+    def format_image_name(img_id, video_name):
+        return f"{video_name}_{img_id:04d}.jpg"
+
+    CURRENT_IMAGE_NAME = format_image_name
     
     gt_dir = PATH_TO_GT_FILES #has to be adapted
     gt_list = os.listdir(gt_dir)
@@ -44,20 +48,20 @@ if __name__ == '__main__':
                 height = 720
                 width = 576  
                 
-            ann_cnt = 0         
+            ann_cnt = 1         
                         
             with open(gt_file, 'r') as ann:
                 line = ann.readline()  
                 while line:
                     params = line.split(' ')
-                    img_id = int(params[0])
+                    img_id = int(params[0]) + 1
                     obj_cnt = int(params[1])
 
                     img_info = dict()
                     img_info['id'] = img_id
                     img_info['width'] = width
                     img_info['height'] = height
-                    img_info['file_name'] = CURRENT_IMAGE_NAME(img_id) #has to be adapted for instance for img_id = 0 image_name = 0.jpg
+                    img_info['file_name'] = CURRENT_IMAGE_NAME(img_id, gt.split('.')[0]) #has to be adapted for instance for img_id = 0 image_name = 0.jpg
                     out_data['images'].append(img_info)
                 
                     for idx in range(obj_cnt):

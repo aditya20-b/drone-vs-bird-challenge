@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 
 video_dir = 'train_videos'
 frames_dir = 'extracted_frames'
@@ -35,7 +36,7 @@ def count_extracted_frames_common_dir(frames_dir: str, video_name: str) -> int:
     return len(frames_count)
 
 # Perform sanity check
-def sanity_check():
+def frame_sanity_check():
     discrepancies = []
     frame_count = 0
     for video in os.listdir(video_dir):
@@ -63,5 +64,51 @@ def sanity_check():
 
     print(f"\nTotal Frames Extracted: {frame_count}")
 
+def frames_annotations_consistency_check():
+    # Paths
+    frames_dir = "extracted_frames"
+    annotations_path = "combined_annotations.json"
+
+    # Load annotations
+    with open(annotations_path, "r") as f:
+        annotations = json.load(f)
+
+    # Get all frames in extracted_frames directory
+    frames = set(os.listdir(frames_dir))
+
+    # Get all frames listed in the annotations file
+    annotated_frames = {img["file_name"] for img in annotations["images"]}
+
+    # Check for mismatches
+    missing_in_annotations = frames - annotated_frames
+    missing_in_frames = annotated_frames - frames
+
+    # Log specific mismatches
+    if missing_in_annotations:
+        print(f"Frames in extracted_frames but missing in annotations: {len(missing_in_annotations)}")
+        print(f"Missing in annotations: {list(missing_in_annotations)[:10]}...")  # Show a sample
+    else:
+        print("All frames in extracted_frames are present in the annotations.")
+
+    if missing_in_frames:
+        print(f"Frames in annotations but missing in extracted_frames: {len(missing_in_frames)}")
+        print(f"Missing in frames: {list(missing_in_frames)[:10]}...")  # Show a sample
+    else:
+        print("All annotated frames are present in extracted_frames.")
+
+    # Save mismatches for further debugging
+    with open("missing_in_frames.json", "w") as f:
+        json.dump(list(missing_in_frames), f, indent=4)
+    with open("missing_in_annotations.json", "w") as f:
+        json.dump(list(missing_in_annotations), f, indent=4)
+
+    # Report summary
+    if not missing_in_annotations and not missing_in_frames:
+        print("✅ All frames and annotations are consistent!")
+    else:
+        print("❌ There are inconsistencies between frames and annotations.")
+
+
+
 if __name__ == "__main__":
-    sanity_check()
+    frames_annotations_consistency_check()
