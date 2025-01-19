@@ -46,3 +46,26 @@ The annotations are provided as text files with one line per frame in the matchi
 framenum num_objs_in_frame obj1_x_left obj1_y_top obj1_w obj1_h obj1_class ...
 ```  
 If you find problems in the data, feel free to create an [issue](https://github.com/wosdetc/challenge/issues).
+
+
+
+## Updates:
+### How to Run
+
+1. Ensure you have `ffmpeg` installed on your system. You can download it from [here](https://ffmpeg.org/download.html).
+2. After installing `ffmpeg` and adding it to your system's PATH, run the following script to extract every single frame to the `extracted_frames` directory:
+  ```sh
+  python scripts/extractFrames.py
+  ```
+3. To convert annotations to COCO format, run the following script:
+  ```sh
+  python scripts/convertAnnToCocoFormat.py
+  ```
+4. To combine them into a single JSON file, run the following script:
+  ```sh
+  python scripts/combinedAnnotations.py
+  ```
+5. After that run the following to perform sanity checks on the generated JSON file:
+  ```sh
+  python scripts/sanityCheck.py
+  ```

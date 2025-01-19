@@ -10,3 +10,4 @@ verification_output/
 *.json
 dataset/
 runs/
+coco_to_yolo/
