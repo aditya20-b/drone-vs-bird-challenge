@@ -16,8 +16,7 @@ log_entries = []
 # Iterate through videos
 for video in os.listdir(video_dir):
     # Fuck you .MP4,
-    # if video.casefold().endswith(('.mp4', '.avi', '.mpg')):
-    if video.startswith("2019_10_16_C0003_3633_inspire"):
+    if video.casefold().endswith(('.mp4', '.avi', '.mpg')):
         video_path = os.path.join(video_dir, video)
         base_name = os.path.splitext(video)[0]
         
