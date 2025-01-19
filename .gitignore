@@ -8,3 +8,5 @@ verification_output/
 *.output_json
 *.zip
 *.json
+dataset/
+runs/
