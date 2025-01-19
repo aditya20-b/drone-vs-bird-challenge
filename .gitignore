@@ -3,3 +3,8 @@ train_videos/
 output_json/
 .env/
 __pycache__/
+.DS_Store
+verification_output/
+*.output_json
+*.zip
+*.json
