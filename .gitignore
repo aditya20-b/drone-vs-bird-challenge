@@ -11,3 +11,5 @@ verification_output/
 dataset/
 runs/
 coco_to_yolo/
+annotated_images/
+video_data/
