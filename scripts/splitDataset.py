@@ -11,65 +11,72 @@ YELLOW = '\033[93m'
 CYAN = '\033[96m'
 RESET = '\033[0m'
 
-# Paths
-frames_dir = "extracted_frames"
-annotations_path = "combined_annotations.json"
-output_frames_dir = "dataset/images"
-output_annotations_dir = "dataset/annotations"
+def split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir_flattened, output_dir, test_size=0.2, val_size=0.1, random_state=42):
+    # Load the JSON mapping
+    print(f"{CYAN}Loading YOLO labels to frames mapping...{RESET}")
+    with open(mapping_json, 'r') as f:
+        yolo_labels_to_frames = json.load(f)
 
-os.makedirs(f"{output_frames_dir}/train", exist_ok=True)
-os.makedirs(f"{output_frames_dir}/val", exist_ok=True)
-os.makedirs(f"{output_frames_dir}/test", exist_ok=True)
-os.makedirs(output_annotations_dir, exist_ok=True)
-
-# Load annotations
-print(f"{CYAN}Loading annotations...{RESET}")
-with open(annotations_path, "r") as f:
-    annotations = json.load(f)
-
-# Extract images and annotations
-images = annotations["images"]
-annotations_list = annotations["annotations"]
-categories = annotations["categories"]
-
-# Split images into train, val, and test
-print(f"{CYAN}Splitting dataset into train, val, and test...{RESET}")
-train_images, temp_images = train_test_split(images, test_size=0.3, random_state=42)
-val_images, test_images = train_test_split(temp_images, test_size=0.5, random_state=42)
-
-# Map image IDs to their corresponding annotations
-def filter_annotations(image_ids):
-    return [ann for ann in annotations_list if ann["image_id"] in image_ids]
-
-# Prepare annotations for each split
-print(f"{CYAN}Filtering annotations for each split...{RESET}")
-train_annotations = filter_annotations({img["id"] for img in train_images})
-val_annotations = filter_annotations({img["id"] for img in val_images})
-test_annotations = filter_annotations({img["id"] for img in test_images})
-
-# Save new COCO JSON files
-def save_coco_json(images, annotations, output_path):
-    coco_format = {
-        "images": images,
-        "annotations": annotations,
-        "categories": categories,
+    # Create output directories
+    dirs = {
+        "train": {"labels": os.path.join(output_dir, "labels", "train"), "images": os.path.join(output_dir, "images", "train")},
+        "val": {"labels": os.path.join(output_dir, "labels", "val"), "images": os.path.join(output_dir, "images", "val")},
+        "test": {"labels": os.path.join(output_dir, "labels", "test"), "images": os.path.join(output_dir, "images", "test")},
     }
-    with open(output_path, "w") as f:
-        json.dump(coco_format, f, indent=4)
 
-print(f"{CYAN}Saving new COCO JSON files...{RESET}")
-save_coco_json(train_images, train_annotations, os.path.join(output_annotations_dir, "train.json"))
-save_coco_json(val_images, val_annotations, os.path.join(output_annotations_dir, "val.json"))
-save_coco_json(test_images, test_annotations, os.path.join(output_annotations_dir, "test.json"))
+    for key in dirs:
+        for subdir in dirs[key].values():
+            os.makedirs(subdir, exist_ok=True)
 
-# Move frames to respective directories
-print(f"{CYAN}Moving frames to respective directories...{RESET}")
-for split_images, split_dir in zip([train_images, val_images, test_images], ["train", "val", "test"]):
-    for img in tqdm(split_images, desc=f"{YELLOW}Processing {split_dir} images{RESET}"):
-        src = os.path.join(frames_dir, img["file_name"])
-        dst = os.path.join(output_frames_dir, split_dir, img["file_name"])
-        if os.path.exists(src):
-            shutil.copy(src, dst)
+    # Prepare data for splitting
+    yolo_labels = list(yolo_labels_to_frames.keys())
+    frames = [yolo_labels_to_frames[label] for label in yolo_labels]
 
-print(f"{GREEN}Dataset split completed!{RESET}")
-print(f"{GREEN}Train: {len(train_images)} images{RESET}, {YELLOW}Val: {len(val_images)} images{RESET}, {RED}Test: {len(test_images)} images.{RESET}")
+    # Split data into train+val and test
+    print(f"{CYAN}Splitting dataset into train, val, and test...{RESET}")
+    train_val_labels, test_labels, train_val_frames, test_frames = train_test_split(
+        yolo_labels, frames, test_size=test_size, random_state=random_state
+    )
+
+    # Further split train+val into train and val
+    val_ratio = val_size / (1 - test_size)  # Adjust validation size relative to the remaining data
+    train_labels, val_labels, train_frames, val_frames = train_test_split(
+        train_val_labels, train_val_frames, test_size=val_ratio, random_state=random_state
+    )
+
+    # Function to move files
+    def move_files(labels, frames, labels_dir, frames_dir):
+        for label, frame in tqdm(zip(labels, frames), total=len(labels), desc=f"{YELLOW}Moving files{RESET}"):
+            # Move label file
+            label_src = os.path.join(yolo_labels_dir, label)
+            label_dst = os.path.join(labels_dir, label)
+            if os.path.exists(label_src):
+                shutil.copy(label_src, label_dst)
+
+            # Move frame file
+            frame_src = os.path.join(frames_dir_flattened, frame)
+            frame_dst = os.path.join(frames_dir, frame)
+            if os.path.exists(frame_src):
+                shutil.copy(frame_src, frame_dst)
+
+    # Organize data for each split
+    print(f"{CYAN}Organizing training data...{RESET}")
+    move_files(train_labels, train_frames, dirs["train"]["labels"], dirs["train"]["images"])
+
+    print(f"{CYAN}Organizing validation data...{RESET}")
+    move_files(val_labels, val_frames, dirs["val"]["labels"], dirs["val"]["images"])
+
+    print(f"{CYAN}Organizing testing data...{RESET}")
+    move_files(test_labels, test_frames, dirs["test"]["labels"], dirs["test"]["images"])
+
+    # Summary
+    print(f"{GREEN}Dataset split completed!{RESET}")
+    print(f"{GREEN}Train: {len(train_labels)} labels{RESET}, {YELLOW}Validation: {len(val_labels)} labels{RESET}, {RED}Test: {len(test_labels)} labels{RESET}")
+
+# Example usage
+mapping_json = "yolo_labels_to_frames.json"
+yolo_labels_dir = "coco_to_yolo/flattened"
+frames_dir = "extracted_frames"
+output_dir = "dataset"
+
+split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir, output_dir)

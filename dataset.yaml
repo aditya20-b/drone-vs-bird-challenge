@@ -1,0 +1,6 @@
+train: /Users/aditya/Documents/Github/drone-vs-bird-challenge/dataset/images/train
+val: /Users/aditya/Documents/Github/drone-vs-bird-challenge/dataset/images/val
+test: /Users/aditya/Documents/Github/drone-vs-bird-challenge/dataset/images/test
+
+names:
+  0: drone
