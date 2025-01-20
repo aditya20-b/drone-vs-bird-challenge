@@ -6,7 +6,7 @@ import json
 # Paths
 data_dirs = "extracted_frames"  # Directories containing images and annotations
 annotations_dir = "coco_to_yolo/flattened"
-output_dir = "verification_output"  # Directory to save images with drawn annotations
+output_dir = "verification_output/yolo_labels"  # Directory to save images with drawn annotations
 annotations_map_path = "yolo_labels_to_frames.json"  # JSON file mapping annotations to images
 os.makedirs(output_dir, exist_ok=True)
 

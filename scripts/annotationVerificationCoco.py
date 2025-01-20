@@ -6,7 +6,7 @@ import random
 # Paths
 coco_json_path = "combined_annotations.json"  # Path to the COCO JSON file
 images_dir = "extracted_frames"  # Path to the images (organized by videoname_frameno.jpg)
-output_dir = "verification_output"  # Directory to save images with drawn annotations
+output_dir = "verification_output/coco_labels"  # Directory to save images with drawn annotations
 os.makedirs(output_dir, exist_ok=True)
 
 # Load COCO JSON
