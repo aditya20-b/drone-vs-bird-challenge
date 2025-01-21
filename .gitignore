@@ -15,3 +15,4 @@ annotated_images/
 video_data/
 training_dataset/
 divider.txt
+dbenv/
