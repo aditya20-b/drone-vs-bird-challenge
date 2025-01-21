@@ -1,0 +1,5 @@
+train: training_dataset/train/images  # Path to training images
+val: training_dataset/val/images      # Path to validation images
+
+nc: 1                           # Number of classes (1 for drone detection)
+names: ['drone']                # Class name(s)
