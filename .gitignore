@@ -13,3 +13,5 @@ runs/
 coco_to_yolo/
 annotated_images/
 video_data/
+training_dataset/
+divider.txt
