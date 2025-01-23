@@ -45,6 +45,8 @@ for annotation_file in sampled_annotations:
 
     with open(annotation_path, "r") as f:
         lines = f.readlines()
+        # contents:
+        # 0 0.0148437 0.243056 0.0286458 0.0398148
 
     # Draw bounding boxes
     for line in lines:
