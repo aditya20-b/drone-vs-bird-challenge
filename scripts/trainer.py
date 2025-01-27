@@ -16,11 +16,11 @@ model.train(
     data='dataset.yaml',  # Path to the dataset configuration file
     epochs=50,            # Number of training epochs
     imgsz=1024,            # Image size for training
-    batch=32,             # Batch size (adjust based on your hardware capabilities)
+    batch=16,             # Batch size (adjust based on your hardware capabilities)
     name='drone_vs_bird_finetune',  # Name of the training run
     pretrained=True,      # Use pre-trained weights
-    device='cpu',         # GPU device index (set to 'cpu' on mac, GPU acceration is only for CUDA)
-    workers=8,            # Number of workers
+    device=0,         # GPU device index (set to 'cpu' on mac, GPU acceration is only for CUDA)
+    workers=12,            # Number of workers
     amp=True,              # Enable Automatic Mixed Precision (for faster training)     
 )
 
