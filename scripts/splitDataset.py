@@ -18,15 +18,10 @@ def split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir_flattened,
         yolo_labels_to_frames = json.load(f)
 
     # Create output directories
-    dirs = {
-        "train": {"labels": os.path.join(output_dir, "labels", "train"), "images": os.path.join(output_dir, "images", "train")},
-        "val": {"labels": os.path.join(output_dir, "labels", "val"), "images": os.path.join(output_dir, "images", "val")},
-        "test": {"labels": os.path.join(output_dir, "labels", "test"), "images": os.path.join(output_dir, "images", "test")},
-    }
-
-    for key in dirs:
-        for subdir in dirs[key].values():
-            os.makedirs(subdir, exist_ok=True)
+    splits = ["train", "val", "test"]
+    for split in splits:
+        for subdir in ["images", "labels"]:
+            os.makedirs(os.path.join(output_dir, split, subdir), exist_ok=True)
 
     # Prepare data for splitting
     yolo_labels = list(yolo_labels_to_frames.keys())
@@ -45,38 +40,38 @@ def split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir_flattened,
     )
 
     # Function to move files
-    def move_files(labels, frames, labels_dir, frames_dir):
-        for label, frame in tqdm(zip(labels, frames), total=len(labels), desc=f"{YELLOW}Moving files{RESET}"):
+    def move_files(labels, frames, split):
+        for label, frame in tqdm(zip(labels, frames), total=len(labels), desc=f"{YELLOW}Processing {split} data{RESET}"):
             # Move label file
             label_src = os.path.join(yolo_labels_dir, label)
-            label_dst = os.path.join(labels_dir, label)
+            label_dst = os.path.join(output_dir, split, "labels", label)
             if os.path.exists(label_src):
                 shutil.copy(label_src, label_dst)
 
-            # Move frame file
+            # Move image file
             frame_src = os.path.join(frames_dir_flattened, frame)
-            frame_dst = os.path.join(frames_dir, frame)
+            frame_dst = os.path.join(output_dir, split, "images", frame)
             if os.path.exists(frame_src):
                 shutil.copy(frame_src, frame_dst)
 
     # Organize data for each split
     print(f"{CYAN}Organizing training data...{RESET}")
-    move_files(train_labels, train_frames, dirs["train"]["labels"], dirs["train"]["images"])
+    move_files(train_labels, train_frames, "train")
 
     print(f"{CYAN}Organizing validation data...{RESET}")
-    move_files(val_labels, val_frames, dirs["val"]["labels"], dirs["val"]["images"])
+    move_files(val_labels, val_frames, "val")
 
     print(f"{CYAN}Organizing testing data...{RESET}")
-    move_files(test_labels, test_frames, dirs["test"]["labels"], dirs["test"]["images"])
+    move_files(test_labels, test_frames, "test")
 
     # Summary
     print(f"{GREEN}Dataset split completed!{RESET}")
     print(f"{GREEN}Train: {len(train_labels)} labels{RESET}, {YELLOW}Validation: {len(val_labels)} labels{RESET}, {RED}Test: {len(test_labels)} labels{RESET}")
 
 # Example usage
-mapping_json = "yolo_labels_to_frames.json"
-yolo_labels_dir = "coco_to_yolo/flattened"
-frames_dir = "extracted_frames"
-output_dir = "dataset"
+mapping_json = "yolo_labels_to_frames.json"  # Path to the mapping JSON file
+yolo_labels_dir = "coco_to_yolo"  # Directory containing YOLO label files
+frames_dir_flattened = "extracted_frames"  # Directory containing flattened image frames
+output_dir = "dataset"  # Output directory for organized dataset
 
-split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir, output_dir)
+split_and_organize_data(mapping_json, yolo_labels_dir, frames_dir_flattened, output_dir)
