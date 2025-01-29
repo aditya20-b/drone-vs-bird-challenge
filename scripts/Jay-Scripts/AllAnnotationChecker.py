@@ -22,6 +22,7 @@ def visualize_frame_annotation(image_path, label_path, coco_annotations_file):
     with open(label_path, 'r') as f:
         for line in f:
             class_id, center_x, center_y, width, height = map(float, line.strip().split())
+            print(f"Converted YOLO Format: center_x: {center_x}, center_y: {center_y}, width: {width}, height: {height}")
             img_h, img_w = image.shape[:2]
 
             # Convert YOLO format to pixel-based COCO coordinates
@@ -29,10 +30,11 @@ def visualize_frame_annotation(image_path, label_path, coco_annotations_file):
             y1 = int((center_y - height / 2) * img_h)
             x2 = int((center_x + width / 2) * img_w)
             y2 = int((center_y + height / 2) * img_h)
-
+            
+            print(f"Taken COCO Format: x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
             # Draw the YOLO bounding box (green color)
             cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(image, f"YOLO Class {int(class_id)}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(image, "Converted YOLO", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Load COCO annotations
     with open(coco_annotations_file, 'r') as f:
@@ -62,9 +64,9 @@ def visualize_frame_annotation(image_path, label_path, coco_annotations_file):
 
         # Draw the bounding box (red color)
         x, y, w, h = map(int, bbox)
-        print(f"COCO Format: x: {x}, y: {y}, width: {w}, height: {h}")
+        print(f"Original COCO Format: x: {x}, y: {y}, width: {w}, height: {h}")
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.putText(image, category_name, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+        cv2.putText(image, "Original COCO", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
 
     # Display the image with both YOLO and COCO annotations
     cv2.imshow('YOLO and COCO Annotations', image)
