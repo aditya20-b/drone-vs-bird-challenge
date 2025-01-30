@@ -17,3 +17,4 @@ training_dataset/
 divider.txt
 dbenv/
 checker/
+checker_dummy/
