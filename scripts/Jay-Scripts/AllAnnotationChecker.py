@@ -74,8 +74,8 @@ def visualize_frame_annotation(image_path, label_path, coco_annotations_file):
     cv2.destroyAllWindows()
 
 # Example usage
-image_path = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/video_data/images/2019_10_16_C0003_1700_matrice_0934.jpg'  # Path to the image (frame)
-label_path = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/video_data/labels/2019_10_16_C0003_1700_matrice_0934.txt'  # Path to the corresponding YOLO annotation file
-coco_annotations_file = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/output_json/2019_10_16_C0003_1700_matrice.json'  # Path to the COCO annotations file
+image_path = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/video_data/images/2019_08_19_C0001_5319_phantom_0001.jpg'  # Path to the image (frame)
+label_path = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/checker_dummy/labels/2019_08_19_C0001_5319_phantom_0001.txt'  # Path to the corresponding YOLO annotation file
+coco_annotations_file = '/Users/jayashre/Developer/VSC/drone-vs-bird-challenge/output_json/2019_08_19_C0001_5319_phantom.json'  # Path to the COCO annotations file
 
 visualize_frame_annotation(image_path, label_path, coco_annotations_file)
