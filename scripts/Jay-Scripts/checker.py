@@ -9,7 +9,7 @@ def count_matching_images(image_directory, json_directory):
         return {}
     
     image_files = set(f for f in os.listdir(image_directory) if not f.endswith(".json"))
-    json_files = [os.path.splitext(f)[0] for f in os.listdir(json_directory) if f.endswith(".json")]
+    json_files = sorted([os.path.splitext(f)[0] for f in os.listdir(json_directory) if f.endswith(".json")])
     
     counts = {}
     for json_file in json_files:
