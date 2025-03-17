@@ -17,3 +17,4 @@ training_dataset/
 dbenv/
 checker/
 checker_dummy/
+testing_dataset/
